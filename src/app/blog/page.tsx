@@ -1,64 +1,7 @@
 import { Clock, Calendar, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-
-// Mock blog posts data
-const blogPosts = [
-  {
-    slug: "building-scalable-react-apps",
-    title: "Building Scalable React Applications: Best Practices and Patterns",
-    description: "Learn how to structure React applications for long-term maintainability and scalability. We'll cover component architecture, state management, and performance optimization techniques.",
-    date: "2024-01-15",
-    readTime: 8,
-    tags: ["React", "Architecture", "Best Practices"],
-    featured: true
-  },
-  {
-    slug: "nextjs-performance-optimization",
-    title: "Next.js Performance Optimization: From Good to Great",
-    description: "Dive deep into Next.js performance optimization techniques including image optimization, code splitting, and server-side rendering strategies.",
-    date: "2024-01-08",
-    readTime: 12,
-    tags: ["Next.js", "Performance", "Web Development"],
-    featured: true
-  },
-  {
-    slug: "typescript-advanced-patterns",
-    title: "Advanced TypeScript Patterns for Better Code Quality",
-    description: "Explore advanced TypeScript features and patterns that can help you write more type-safe and maintainable code in your projects.",
-    date: "2024-01-01",
-    readTime: 10,
-    tags: ["TypeScript", "Programming", "Code Quality"],
-    featured: false
-  },
-  {
-    slug: "api-design-best-practices",
-    title: "RESTful API Design: Best Practices and Common Pitfalls",
-    description: "A comprehensive guide to designing robust and user-friendly APIs, covering everything from resource naming to error handling.",
-    date: "2023-12-20",
-    readTime: 15,
-    tags: ["API", "Backend", "Best Practices"],
-    featured: false
-  },
-  {
-    slug: "css-grid-mastery",
-    title: "Mastering CSS Grid: Layout Techniques for Modern Web Design",
-    description: "Learn how to create complex, responsive layouts with CSS Grid. Includes practical examples and real-world use cases.",
-    date: "2023-12-10",
-    readTime: 6,
-    tags: ["CSS", "Frontend", "Layout"],
-    featured: false
-  },
-  {
-    slug: "docker-development-workflow",
-    title: "Streamlining Development with Docker: A Complete Guide",
-    description: "Set up efficient development environments using Docker. Learn containerization best practices and how to optimize your development workflow.",
-    date: "2023-12-01",
-    readTime: 11,
-    tags: ["Docker", "DevOps", "Development"],
-    featured: false
-  }
-];
+import { allPosts } from "contentlayer/generated";
 
 function formatDate(dateString: string): string {
   const date = new Date(dateString);
@@ -70,8 +13,13 @@ function formatDate(dateString: string): string {
 }
 
 export default function Blog() {
-  const featuredPosts = blogPosts.filter(post => post.featured);
-  const otherPosts = blogPosts.filter(post => !post.featured);
+  // Filter published posts and sort by date
+  const publishedPosts = allPosts
+    .filter(post => post.published)
+    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+  
+  const featuredPosts = publishedPosts.filter(post => post.featured);
+  const otherPosts = publishedPosts.filter(post => !post.featured);
 
   return (
     <div className="container mx-auto px-4 py-16">
@@ -107,7 +55,7 @@ export default function Blog() {
                 
                 <div className="space-y-2">
                   <h3 className="text-xl font-semibold hover:text-primary transition-colors">
-                    <Link href={`/blog/${post.slug}`}>
+                    <Link href={post.url}>
                       {post.title}
                     </Link>
                   </h3>
@@ -122,7 +70,7 @@ export default function Blog() {
                   ))}
                 </div>
 
-                <Link href={`/blog/${post.slug}`}>
+                <Link href={post.url}>
                   <Button variant="ghost" className="p-0 h-auto font-medium">
                     Read more
                     <ArrowRight className="w-4 h-4 ml-1" />
@@ -154,7 +102,7 @@ export default function Blog() {
                   </div>
                   
                   <h3 className="text-lg font-semibold hover:text-primary transition-colors">
-                    <Link href={`/blog/${post.slug}`}>
+                    <Link href={post.url}>
                       {post.title}
                     </Link>
                   </h3>
@@ -170,7 +118,7 @@ export default function Blog() {
                   </div>
                 </div>
                 
-                <Link href={`/blog/${post.slug}`}>
+                <Link href={post.url}>
                   <Button variant="outline">
                     Read Post
                     <ArrowRight className="w-4 h-4 ml-2" />
