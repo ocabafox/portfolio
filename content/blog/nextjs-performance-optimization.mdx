@@ -1,0 +1,333 @@
+---
+title: "Next.js Performance Optimization: From Good to Great"
+description: "Dive deep into Next.js performance optimization techniques including image optimization, code splitting, and server-side rendering strategies."
+date: "2024-01-08"
+tags: ["Next.js", "Performance", "Web Development"]
+featured: true
+published: true
+---
+
+Performance is crucial for modern web applications. Users expect fast, responsive experiences, and search engines reward performant sites. In this comprehensive guide, we'll explore how to optimize your Next.js applications for maximum performance.
+
+## Image Optimization
+
+Next.js provides powerful built-in image optimization through the `next/image` component.
+
+### Using the Image Component
+
+```jsx
+import Image from 'next/image';
+
+function ProfileCard({ user }) {
+  return (
+    <div className="profile-card">
+      <Image
+        src={user.avatar}
+        alt={user.name}
+        width={200}
+        height={200}
+        priority={user.featured} // Load immediately for above-fold images
+        placeholder="blur"
+        blurDataURL="data:image/jpeg;base64,..." // Low-quality placeholder
+      />
+      <h3>{user.name}</h3>
+    </div>
+  );
+}
+```
+
+### Key Benefits
+
+- Automatic format selection (WebP, AVIF when supported)
+- Responsive image sizing
+- Lazy loading by default
+- Blur-up placeholder support
+
+## Code Splitting and Bundle Optimization
+
+### Dynamic Imports
+
+Use dynamic imports to split your code at logical boundaries:
+
+```jsx
+import dynamic from 'next/dynamic';
+
+// Component-level splitting
+const HeavyChart = dynamic(() => import('../components/HeavyChart'), {
+  loading: () => <div>Loading chart...</div>,
+  ssr: false // Disable SSR for client-only components
+});
+
+// Conditional loading
+const AdminPanel = dynamic(() => import('../components/AdminPanel'), {
+  loading: () => <div>Loading admin panel...</div>
+});
+
+function Dashboard({ user }) {
+  return (
+    <div>
+      <h1>Dashboard</h1>
+      <HeavyChart data={chartData} />
+      {user.isAdmin && <AdminPanel />}
+    </div>
+  );
+}
+```
+
+### Bundle Analysis
+
+Analyze your bundle size to identify optimization opportunities:
+
+```bash
+npm install @next/bundle-analyzer
+```
+
+```js
+// next.config.js
+const withBundleAnalyzer = require('@next/bundle-analyzer')({
+  enabled: process.env.ANALYZE === 'true',
+});
+
+module.exports = withBundleAnalyzer({
+  // Your Next.js config
+});
+```
+
+## Server-Side Rendering Strategies
+
+### Choosing the Right Rendering Method
+
+Next.js offers multiple rendering strategies. Choose based on your data requirements:
+
+```jsx
+// Static Generation (SSG) - Best for content that doesn't change often
+export async function getStaticProps() {
+  const posts = await fetchBlogPosts();
+  
+  return {
+    props: { posts },
+    revalidate: 3600, // Regenerate every hour
+  };
+}
+
+// Server-Side Rendering (SSR) - For dynamic, user-specific content
+export async function getServerSideProps(context) {
+  const { userId } = context.query;
+  const userData = await fetchUserData(userId);
+  
+  return {
+    props: { userData },
+  };
+}
+
+// Client-Side Rendering - For highly interactive content
+function UserDashboard() {
+  const { data, error } = useSWR('/api/user/dashboard', fetcher);
+  
+  if (error) return <div>Failed to load</div>;
+  if (!data) return <div>Loading...</div>;
+  
+  return <DashboardContent data={data} />;
+}
+```
+
+### ISR (Incremental Static Regeneration)
+
+ISR combines the benefits of static generation with the ability to update content:
+
+```jsx
+export async function getStaticProps() {
+  const product = await fetchProduct(params.id);
+  
+  return {
+    props: { product },
+    revalidate: 60, // Regenerate at most once per minute
+  };
+}
+
+export async function getStaticPaths() {
+  const products = await fetchPopularProducts();
+  
+  return {
+    paths: products.map(product => ({
+      params: { id: product.id }
+    })),
+    fallback: 'blocking', // Generate other pages on-demand
+  };
+}
+```
+
+## Caching Strategies
+
+### API Route Caching
+
+Implement caching in your API routes:
+
+```jsx
+// pages/api/posts.js
+export default async function handler(req, res) {
+  // Set cache headers
+  res.setHeader(
+    'Cache-Control',
+    'public, s-maxage=60, stale-while-revalidate=300'
+  );
+  
+  const posts = await fetchPosts();
+  res.json(posts);
+}
+```
+
+### SWR for Client-Side Caching
+
+Use SWR for efficient client-side data fetching:
+
+```jsx
+import useSWR from 'swr';
+
+function Profile() {
+  const { data, error, mutate } = useSWR('/api/user', fetcher, {
+    revalidateOnFocus: false,
+    revalidateOnReconnect: false,
+    refreshInterval: 0,
+  });
+  
+  const updateProfile = async (updates) => {
+    // Optimistic updates
+    mutate({ ...data, ...updates }, false);
+    
+    try {
+      await updateUser(updates);
+      mutate(); // Revalidate
+    } catch (error) {
+      mutate(); // Revert on error
+    }
+  };
+  
+  return <ProfileForm data={data} onUpdate={updateProfile} />;
+}
+```
+
+## Performance Monitoring
+
+### Core Web Vitals
+
+Monitor your application's Core Web Vitals:
+
+```jsx
+// _app.js
+export function reportWebVitals(metric) {
+  switch (metric.name) {
+    case 'CLS':
+    case 'LCP':
+    case 'FCP':
+    case 'FID':
+    case 'TTFB':
+      // Send to analytics
+      analytics.track('Web Vital', {
+        name: metric.name,
+        value: metric.value,
+        id: metric.id,
+      });
+      break;
+    default:
+      break;
+  }
+}
+```
+
+### Runtime Performance
+
+Use the Profiler API to identify performance bottlenecks:
+
+```jsx
+import { Profiler } from 'react';
+
+function onRenderCallback(id, phase, actualDuration) {
+  // Log or send performance data
+  console.log({ id, phase, actualDuration });
+}
+
+function App() {
+  return (
+    <Profiler id="App" onRender={onRenderCallback}>
+      <Layout>
+        <Router />
+      </Layout>
+    </Profiler>
+  );
+}
+```
+
+## Advanced Optimizations
+
+### Webpack Optimizations
+
+Customize webpack for better performance:
+
+```js
+// next.config.js
+module.exports = {
+  webpack: (config, { isServer }) => {
+    if (!isServer) {
+      // Reduce bundle size by ignoring server-only modules
+      config.resolve.fallback = {
+        fs: false,
+        net: false,
+        tls: false,
+      };
+    }
+    
+    // Optimize imports
+    config.optimization.providedExports = true;
+    config.optimization.usedExports = true;
+    config.optimization.sideEffects = false;
+    
+    return config;
+  },
+};
+```
+
+### Service Worker Implementation
+
+Add a service worker for advanced caching:
+
+```js
+// public/sw.js
+self.addEventListener('fetch', event => {
+  if (event.request.destination === 'image') {
+    event.respondWith(
+      caches.open('images').then(cache => {
+        return cache.match(event.request).then(response => {
+          return response || fetch(event.request).then(fetchResponse => {
+            cache.put(event.request, fetchResponse.clone());
+            return fetchResponse;
+          });
+        });
+      })
+    );
+  }
+});
+```
+
+## Performance Checklist
+
+- ✅ Use Next.js Image component for all images
+- ✅ Implement appropriate rendering strategy (SSG, SSR, ISR)
+- ✅ Split code at component and route levels
+- ✅ Optimize bundle size with tree shaking
+- ✅ Implement caching strategies
+- ✅ Monitor Core Web Vitals
+- ✅ Use SWR or React Query for data fetching
+- ✅ Optimize fonts with next/font
+- ✅ Minimize JavaScript execution time
+- ✅ Implement service worker for offline support
+
+## Conclusion
+
+Performance optimization is an ongoing process. Start with the basics like image optimization and appropriate rendering strategies, then move on to advanced techniques like custom webpack configurations and service workers.
+
+Remember to measure before and after implementing optimizations to ensure they're actually improving performance. Tools like Lighthouse, Web Vitals, and Next.js Analytics can help you track your progress.
+
+---
+
+*Want to dive deeper into Next.js performance? Check out my other articles on [React optimization](/blog/react-performance) and [web performance fundamentals](/blog/web-performance-fundamentals).*
