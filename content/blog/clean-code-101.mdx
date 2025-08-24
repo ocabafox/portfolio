@@ -1,0 +1,260 @@
+---
+title: "Clean Code 101 — Meaningful Names and Functions"
+description: "Essential tips and best practices for writing clean, readable code with meaningful names and well-structured functions."
+date: "2025-08-24"
+tags: ["clean-code", "best-practices", "software-development", "programming"]
+featured: false
+published: true
+---
+
+# Clean Code 101 — Meaningful Names and Functions
+
+Writing clean code is one of the most important skills a developer can master. This article covers fundamental principles for creating code that is not only functional but also readable, maintainable, and elegant.
+
+> "You know you are working on clean code when each routine you read turns out to be pretty much what you expected. You can call it beautiful code when the code also makes it look like the language was made for the problem."
+> — Ward Cunningham
+
+The ratio of time spent reading vs writing code is well over 10:1. We are constantly reading code to write new code. This means we should prioritize readable code over code that's merely easier to write.
+
+## Meaningful Names
+
+### Use Intention-Revealing Names
+
+The name of a variable, function, or class should answer all the big questions: why it exists, what it does, and how it is used. If a name requires a comment, then the name does not reveal its intent.
+
+**Bad:**
+```js
+int d; // elapsed time in days
+```
+
+**Good:**
+```js
+int elapsedTimeInDays;
+```
+
+### Avoid Similar Names
+
+Beware of using names which vary in small ways. Consider these two examples:
+- `XYZControllerForEfficientHandlingOfStrings`
+- `XYZControllerForEfficientStorageOfStrings`
+
+How long did it take you to spot the difference? This rule also improves IDE search and autocompletion functionality.
+
+### Use Pronounceable Names
+
+**Bad:**
+```java
+class DtaRcrd102 {
+    private Date genymdhms;
+    private Date modymdhms;
+}
+```
+
+**Good:**
+```java
+class Customer {
+    private Date generationTimestamp;
+    private Date modificationTimestamp;
+}
+```
+
+### Use Searchable Names
+
+If a variable or constant might be seen or used in multiple places, give it a search-friendly name.
+
+**Bad:**
+```js
+for (int j = 0; j < 34; j++) {
+    s += (t[j] * 4) / 5;
+}
+```
+
+**Good:**
+```js
+int realDaysPerIdealDay = 4;
+const int WORK_DAYS_PER_WEEK = 5;
+int sum = 0;
+for (int j = 0; j < NUMBER_OF_TASKS; j++) {
+    int realTaskDays = taskEstimate[j] * realDaysPerIdealDay;
+    int realTaskWeeks = (realTaskDays / WORK_DAYS_PER_WEEK);
+    sum += realTaskWeeks;
+}
+```
+
+### Naming Conventions
+
+**Class Names:** Should be nouns or noun phrases like `Customer`, `WikiPage`, `Account`, and `AddressParser`. Avoid words like `Manager`, `Processor`, `Data`, or `Info`.
+
+**Method Names:** Should be verbs or verb phrases like `postPayment`, `deletePage`, or `save`.
+
+**Constructor Overloading:** Use static factory methods with descriptive names:
+
+**Bad:**
+```java
+Complex fulcrumPoint = new Complex(23.0);
+```
+
+**Good:**
+```java
+Complex fulcrumPoint = Complex.FromRealNumber(23.0);
+```
+
+### Pick One Word Per Concept
+
+Consistency is crucial. Don't use `fetch`, `retrieve`, and `get` as equivalent methods in different classes. Pick one word for one abstract concept and stick with it throughout your codebase.
+
+## Functions
+
+### Keep Functions Small
+
+> "The first rule of functions is that they should be small. The second rule of functions is that they should be smaller than that."
+
+**Before:**
+```java
+public static String renderPageWithSetupAndTeardowns(
+    PageData pageData, boolean isSuite
+) throws Exception {
+    boolean isTestPage = pageData.hasAttribute("Test");
+    if (isTestPage) {
+        WikiPage testPage = pageData.getWikiPage();
+        StringBuffer newPageContent = new StringBuffer();
+        includeSetupPages(testPage, newPageContent, isSuite);
+        newPageContent.append(pageData.getContent());
+        includeTeardownPages(testPage, newPageContent, isSuite);
+        pageData.setContent(newPageContent.toString());
+    }
+    
+    return pageData.getHtml();
+}
+```
+
+**After:**
+```java
+public static String renderPageWithSetupAndTeardowns(
+    PageData pageData, boolean isSuite
+) throws Exception {
+    if (isTestPage(pageData)) {
+        includeSetupAndTeardownPages(pageData, isSuite);
+    }
+    
+    return pageData.getHtml();
+}
+```
+
+### Do One Thing
+
+Functions should do one thing and do it well. The blocks within `if`, `else`, and `while` statements should ideally be one line long—probably a function call.
+
+To determine if a function does one thing, describe it with a brief "TO" paragraph:
+
+*"TO RenderPageWithSetupsAndTeardowns, we check to see whether the page is a test page and if so, we include the setups and teardowns. In either case we render the page in HTML."*
+
+### The Stepdown Rule
+
+Code should read like a top-down narrative. Each function should be followed by those at the next level of abstraction, creating a series of "TO" paragraphs:
+
+- *To include the setups and teardowns, we include setups, then the test page content, then teardowns.*
+- *To include the setups, we include the suite setup if this is a suite, then the regular setup.*
+- *To include the suite setup, we search the parent hierarchy for the "SuiteSetUp" page...*
+
+### Handle Switch Statements Carefully
+
+Switch statements are inherently problematic—they're large and violate the Single Responsibility Principle. Use polymorphism to bury them in low-level classes:
+
+**Bad:**
+```java
+public Money calculatePay(Employee e) throws InvalidEmployeeType {
+    switch (e.type) {
+        case COMMISSIONED:
+            return calculateCommissionedPay(e);
+        case HOURLY:
+            return calculateHourlyPay(e);
+        default:
+            throw new InvalidEmployeeType(e.type);
+    }
+}
+```
+
+**Good:**
+```java
+public abstract class Employee {
+    public abstract boolean isPayDay();
+    public abstract Money calculatePay();
+    public abstract void deliverPay(Money pay);
+}
+
+public interface EmployeeFactory {
+    public Employee makeEmployee(EmployeeRecord r) throws InvalidEmployeeType;
+}
+
+public class EmployeeFactoryImpl implements EmployeeFactory {
+    public Employee makeEmployee(EmployeeRecord r) throws InvalidEmployeeType {
+        switch (r.type) {
+            case COMMISSIONED:
+                return new CommissionedEmployee(r);
+            case HOURLY:
+                return new HourlyEmployee(r);
+            default:
+                throw new InvalidEmployeeType(r.type);
+        }
+    }
+}
+```
+
+### Minimize Function Arguments
+
+The ideal number of arguments:
+- **Zero (niladic)** - ideal
+- **One (monadic)** - good
+- **Two (dyadic)** - acceptable
+- **Three (triadic)** - avoid if possible
+- **More than three (polyadic)** - requires special justification
+
+**Monadic Example:**
+```java
+boolean fileExists("MyFile") // Asking a question about the argument
+```
+
+**Dyadic Example:**
+```java
+// Less clear
+writeField(outputStream, name)
+
+// More clear
+writeField(name)
+
+// Acceptable when arguments form a cohesive unit
+Point p = new Point(0, 0)
+```
+
+### Use Argument Objects
+
+When functions need more than two or three arguments, consider wrapping them in a class:
+
+**Before:**
+```java
+Circle makeCircle(double x, double y, double radius);
+```
+
+**After:**
+```java
+Circle makeCircle(Point center, double radius);
+```
+
+### Avoid Side Effects
+
+Functions should do what their name promises and nothing more. Side effects create hidden behaviors that lead to temporal couplings and unexpected dependencies.
+
+### Command/Query Separation
+
+Functions should either do something or answer something, but not both. This separation makes code more predictable and easier to understand.
+
+## Conclusion
+
+Clean code is about communication. Every line of code is a message to future developers (including yourself). By following these principles of meaningful naming and function design, you create code that tells a story—one that's easy to read, understand, and maintain.
+
+Remember: clean code isn't just about following rules; it's about crafting code that serves both the machine and the human mind.
+
+---
+
+*This article is inspired by Robert C. Martin's "Clean Code: A Handbook of Agile Software Craftsmanship" and the original [Medium article](https://medium.com/coding-skills/clean-code-101-meaningful-names-and-functions-bf450456d90c) by Miguel Loureiro.*

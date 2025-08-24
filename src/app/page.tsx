@@ -2,6 +2,27 @@ import { Github, Linkedin, Mail, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
+const featuredProjects = [
+  {
+    title: "Screenrights",
+    description: "I contributed to Screenrights, a rights and royalty management platform for the screen industry. The system supports educators, government, and broadcasters in Australia and New Zealand by enabling licensed access to broadcast content. My work involved building and improving features that streamline royalty distribution, rights management, and industry services such as collection account management, residuals, and global royalty tracking.",
+    image: "/images/screenrights-logo.svg",
+    tech: ['React', 'Node.js', 'TypeScript', 'Next.js', 'Tailwind CSS', 'AWS', 'Git', 'Figma', 'Unit Testing', 'React Redux', 'Agile Development', 'React Query', 'React Hook Form', 'Retool'],
+  },
+  {
+    title: 'Websta.me',
+    description: 'A high-performance Instagram web viewer built with Go and Gin framework, featuring real-time content aggregation and caching. Implemented efficient data scraping algorithms with rate limiting, Redis-based session management, and PostgreSQL for persistent storage. The application utilized Docker containerization for scalable deployment and CI/CD pipelines for automated testing and deployment workflows.',
+    image: "/images/websta_logo.png",
+    tech: ['Go', 'Gin', 'PostgreSQL', 'Redis', 'Docker', 'Git', 'Agile Development', 'CI/CD', 'GitHub Actions'],
+  },
+  {
+    title: 'KomBea',
+    description: 'Develops customer interaction and call center automation solutions. My work involved building and maintaining scalable web applications, integrating APIs for real-time communication, and implementing secure compliance-driven features. I focused on improving system performance, enhancing automation workflows, and contributing to a robust, cloud-ready architecture.',
+    image: '/images/kombea.svg',
+    tech: ['React', 'TypeScript', 'Node.js', 'Tailwind CSS', 'Git', 'Figma', 'React Redux', 'Agile Development'],
+  }
+];
+
 export default function Home() {
   return (
     <div className="container mx-auto px-4 py-16">
@@ -40,7 +61,7 @@ export default function Home() {
               </div>
               <div className="space-y-2 text-sm font-mono text-muted-foreground text-right">
                 <div>Node.js {'{}'}</div>
-                <div className="pr-4">Express.js</div>
+                <div className="pr-4">Nest.js</div>
                 <div className="pr-4">PostgreSQL</div>
                 <div>API • REST</div>
                 <div>Docker</div>
@@ -132,7 +153,11 @@ export default function Home() {
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6">
           {[
             "React", "Next.js", "TypeScript", "Node.js", "Nest.js", "PostgreSQL",
-            "Tailwind CSS", "AWS", "Docker", "Git", "Figma", "Go", "GraphQL", "Unit Testing", "CI/CD", "MERN", "React Redux", "Agile Develo", "React Query"
+            "Tailwind CSS", "AWS", "Docker", "Git", "Figma", "Go", "GraphQL", 
+            "Unit Testing", "CI/CD", "MERN", "React Redux", "Agile Development", 
+            "React Query", "React Hook Form", "Retool", "ContentLayer", "MongoDB",
+            "Express.js", "REST APIs", "Jest", "Cypress", "GitHub Actions", "Vercel",
+            "Zustand", "Vite", "MySQL", "ESLint", "Prettier", "Postman"
           ].map((tech) => (
             <div key={tech} className="flex items-center justify-center p-4 border rounded-lg hover:shadow-md transition-shadow">
               <span className="font-medium text-sm">{tech}</span>
@@ -151,19 +176,23 @@ export default function Home() {
         </div>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {[1, 2, 3].map((i) => (
-            <div key={i} className="border rounded-lg p-6 hover:shadow-lg transition-shadow">
+          {featuredProjects.map((project) => (
+            <div key={project.title} className="border rounded-lg p-6 hover:shadow-lg transition-shadow">
               <div className="space-y-4">
-                <div className="h-48 bg-muted rounded-md"></div>
+                <div className="h-48 bg-muted rounded-md flex items-center justify-center">
+                  <img src={project.image} alt={project.title} className="w-full h-full object-contain" />
+                </div>
                 <div className="space-y-2">
-                  <h3 className="text-xl font-semibold">Project {i}</h3>
+                  <h3 className="text-xl font-semibold">{project.title}</h3>
                   <p className="text-muted-foreground">
-                    A brief description of this amazing project that showcases my skills and experience.
+                    {project.description}
                   </p>
                   <div className="flex flex-wrap gap-2">
-                    <span className="px-2 py-1 bg-secondary text-secondary-foreground text-xs rounded">React</span>
-                    <span className="px-2 py-1 bg-secondary text-secondary-foreground text-xs rounded">TypeScript</span>
-                    <span className="px-2 py-1 bg-secondary text-secondary-foreground text-xs rounded">Next.js</span>
+                    {project.tech?.map((tech) => (
+                      <span key={tech} className="px-2 py-1 bg-secondary text-secondary-foreground text-xs rounded">
+                        {tech}
+                      </span>
+                    ))}
                   </div>
                 </div>
               </div>

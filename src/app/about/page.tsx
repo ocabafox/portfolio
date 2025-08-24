@@ -5,68 +5,97 @@ import Link from "next/link";
 const skills = [
   {
     category: "Frontend",
-    items: ["React", "Next.js", "TypeScript", "Tailwind CSS", "Framer Motion", "Redux/Zustand"]
+    items: ["React", "Next.js", "TypeScript", "Tailwind CSS", "Redux/Zustand", "Figma", "Vite", "Retool"]
   },
   {
     category: "Backend", 
-    items: ["Node.js", "Express", "Python", "FastAPI", "PostgreSQL", "MongoDB"]
+    items: ["Node.js", "Go", "Nest.js", "PostgreSQL", "SQL/NoSQL", "RestApi", "JWT", "Auth0"]
   },
   {
     category: "Tools & Services",
-    items: ["Git", "Docker", "AWS", "Vercel", "Figma", "Jest"]
+    items: ["Git", "Docker", "AWS", "Vercel", "Figma", "Jest", "CI/CD", "Postman", "Storybook"]
   }
 ];
 
 const experience = [
   {
-    company: "Tech Company",
-    position: "Senior Frontend Developer",
+    company: "Screenrights / Ray Business Technologies",
+    position: "Full Stack Developer",
     period: "2022 - Present",
     description: [
-      "Led development of modern web applications using React and Next.js",
-      "Improved application performance by 40% through code optimization",
-      "Mentored junior developers and conducted code reviews"
+      "Implemented new features and innovative solutions using React and Next.js",
+      "Optimized application performance through efficient code refactoring and bug fixes",
+      "Set up and configured frontend architecture and development workflows",
+      "Provided technical feasibility analysis and feedback for proposed features",
+      "Built and maintained full-stack applications using modern tech stack",
+      "Collaborated with cross-functional teams to deliver pixel-perfect UI components",
+      "Developed and maintained scalable and maintainable codebase",
     ]
   },
   {
-    company: "Startup Inc",
-    position: "Full Stack Developer", 
+    company: "KomBea",
+    position: "Frontend Developer", 
     period: "2020 - 2022",
     description: [
-      "Built and maintained full-stack applications using MEAN stack",
-      "Implemented CI/CD pipelines reducing deployment time by 60%",
-      "Collaborated with design team to create pixel-perfect UI components"
+      "Built and maintained scalable web applications using React, TypeScript, and Node.js",
+      "Integrated APIs for real-time communication and customer interaction systems",
+      "Implemented secure compliance-driven features for call center automation solutions",
+      "Improved system performance and enhanced automation workflows",
+      "Contributed to robust, cloud-ready architecture development",
+      "CI/CD pipelines with GitHub Actions for automated testing and deployment",
+      "Collaborated with design team using Figma to create pixel-perfect UI components",
+      "Utilized React Redux for state management in complex applications",
     ]
-  }
+  },
+     {
+     company: "A-FIS PTE.LTD.",
+     position: "Full Stack Developer", 
+     period: "2015 - 2020",
+     description: [
+       "Built high-performance web applications using Go and Gin framework",
+       "Implemented efficient data scraping algorithms with rate limiting mechanisms",
+       "Developed Redis-based session management and caching solutions",
+       "Designed and maintained PostgreSQL databases for persistent storage",
+       "Utilized Docker containerization for scalable deployment architectures",
+       "Implemented CI/CD pipelines with GitHub Actions for automated testing and deployment",
+       "Built real-time content aggregation systems with optimized performance"
+     ]
+   }
 ];
+
+const yearsOfExperience = new Date().getFullYear() - 2015;
 
 export default function About() {
   return (
     <div className="container mx-auto px-4 py-16">
       {/* Hero Section */}
-      <section className="max-w-4xl mx-auto space-y-12">
+      <section className="max-w-4xl mx-auto space-y-12 pb-20">
         <div className="text-center space-y-4">
           <h1 className="text-4xl font-bold">About Me</h1>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Passionate developer with 4+ years of experience building modern web applications
+            Passionate developer with {yearsOfExperience}+ years of experience building modern web applications
             that solve real-world problems.
           </p>
         </div>
 
         <div className="grid md:grid-cols-2 gap-12 items-center">
           <div className="space-y-6">
-            <div className="h-80 bg-muted rounded-lg flex items-center justify-center">
-              <span className="text-muted-foreground">Your Photo</span>
+            <div className="h-80 bg-muted rounded-lg overflow-hidden">
+              <img 
+                src="/images/my-profile-picture.jpg" 
+                alt="Ricky Ocaba - Full Stack Developer" 
+                className="w-full h-full object-cover object-center"
+              />
             </div>
             
             <div className="flex gap-4 justify-center">
-              <Link href="https://github.com" className="text-muted-foreground hover:text-foreground transition-colors">
+              <Link href="https://github.com/ocabafox" className="text-muted-foreground hover:text-foreground transition-colors">
                 <Github className="w-6 h-6" />
               </Link>
-              <Link href="https://linkedin.com" className="text-muted-foreground hover:text-foreground transition-colors">
+              <Link href="https://www.linkedin.com/in/ricky-ocaba-5b6238125" className="text-muted-foreground hover:text-foreground transition-colors">
                 <Linkedin className="w-6 h-6" />
               </Link>
-              <Link href="mailto:your.email@example.com" className="text-muted-foreground hover:text-foreground transition-colors">
+              <Link href="mailto:ocaba.ricky@gmail.com" className="text-muted-foreground hover:text-foreground transition-colors">
                 <Mail className="w-6 h-6" />
               </Link>
             </div>
@@ -77,18 +106,26 @@ export default function About() {
               <h2 className="text-2xl font-semibold">My Story</h2>
               <div className="space-y-4 text-muted-foreground">
                 <p>
-                  I started my journey in web development 4 years ago, driven by curiosity 
-                  about how digital products work. What began as a hobby quickly became my passion.
+                  With over {yearsOfExperience} years of experience in software development, I've evolved from a curious 
+                  developer into a versatile full-stack engineer. My journey began with a fascination 
+                  for how digital solutions can transform businesses and improve user experiences.
                 </p>
                 <p>
-                  Today, I specialize in creating modern, responsive web applications using 
-                  React, Next.js, and TypeScript. I believe in writing clean, maintainable 
-                  code and creating exceptional user experiences.
+                  I specialize in building scalable web applications using modern technologies like 
+                  React, Next.js, TypeScript, and Go. My expertise spans from crafting intuitive 
+                  frontend interfaces to architecting robust backend systems with PostgreSQL, Redis, 
+                  and cloud-ready infrastructures.
                 </p>
                 <p>
-                  When I'm not coding, you can find me exploring new technologies, 
-                  contributing to open source projects, or sharing my knowledge through 
-                  blog posts and mentoring.
+                  Throughout my career, I've contributed to diverse projects - from rights management 
+                  platforms serving the entertainment industry to customer interaction systems and 
+                  high-performance web applications. I'm passionate about writing clean, maintainable 
+                  code and implementing innovative solutions that drive real business value.
+                </p>
+                <p>
+                  When I'm not coding, I enjoy exploring emerging technologies, optimizing system 
+                  performance, and collaborating with cross-functional teams to deliver exceptional 
+                  digital experiences.
                 </p>
               </div>
             </div>
